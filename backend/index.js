@@ -1,8 +1,9 @@
 // importamos todas las librerias de express
 import express from 'express';
-
 import dotenv from "dotenv";
 import { conectarDB, supabase } from './db/db.js';
+import usuarioRouter from "./routes/user.js";
+
 dotenv.config();
 
 // creamos la app de express
@@ -36,6 +37,12 @@ app.get('/personal', (req, res) => {
         mensaje: "hola mi nombre es sofia tengo 19 años y soy aprendiz"
     });
 });
+
+
+// get usuario 
+
+app.use("/usuario", usuarioRouter);
+
 
 app.get("/usuario", async (req,res) => {
     const { data, error } = await supabase
@@ -397,6 +404,101 @@ app.post("/factura", async (req,res)=> {
             mensaje: "factura creada correctamente",
             factura: data[0]
         });
+});
+
+   // ruta de actualizar usuarios a la base de datos
+
+app.put("/factura/:id", async (req, res) => {
+
+    console.log("🎮 BODY UPDATE:", req.body);
+
+    const { id } = req.params;
+    const {numero_factura,subtotal,impuesto,total,estado,metodo_pago,pedidos_id,usuario_id} = req.body;
+
+    // validar id
+
+    if (!id) {
+        return res.status(400).json({ error: "Falta el ID" });
+    }
+
+    // validar que llegue al menos un dato
+
+    if (!numero_factura && !subtotal &&  !impuesto && !total  && estado && !metodo_pago && !pedidos_id && !usuario_id) {
+        return res.status(400).json({ error: "No hay datos para actualizar" });
+    }
+
+    // construir objeto dinamico
+    const datosActualizar = {};
+
+    if (numero_factura) datosActualizar.numero_factura = numero_factura;
+    if (subtotal) datosActualizar.subtotal = subtotal;
+    if (impuesto) datosActualizar.impuesto = impuesto;
+    if (total) datosActualizar.total = total;
+    if (estado) datosActualizar.estado = estado;
+    if (metodo_pago) datosActualizar.metodo_pago = metodo_pago;
+    if (pedidos_id) datosActualizar.pedidos_id = pedidos_id;
+    if (usuario_id) datosActualizar.usuario_id = usuario_id;
+
+    console.log("🎮 Datos  a actualizar:", datosActualizar);
+
+    // actualizar en supabase 
+    const { data, error } = await supabase
+        .from("factura")
+        .update(datosActualizar)
+        .eq("id", id)
+        .select();
+
+        console.log("🎮DB;", data);
+        console.log("error:", error);
+
+        if (error) {
+            return res.status(500).json({ error });
+        }
+
+        if (!data || data.length === 0) {
+            return res.status(404).json({ error: "factura no encontrados" });
+        }
+
+        res.json({
+            mensaje: "factura actualizados",
+            pedidos: data[0]
+        });
+});
+
+// ruta de eliminar usuario a la base de datos
+app.delete("/factura/:id", async (req, res) => {
+
+    const { id } = req.params;
+
+    console.log("ID a eliminar:", id);
+
+    // validar id
+    if (!id) {
+        return res.status(400).json({ error: "Falta el ID" });
+    }
+
+    // eliminar en supabase
+    const { data, error } = await supabase
+        .from("factura")
+        .delete()
+        .eq("id", id)
+        .select();
+
+    console.log("🎮DB:", data);
+    console.log("error:", error);
+
+    if (error) {
+        return res.status(500).json({ error });
+    }
+
+    if (!data || data.length === 0) {
+        return res.status(404).json({ error: "facturas no encontrados" });
+    }
+
+    res.json({
+        mensaje: "factura eliminada",
+        usuario: data[0]
+    });
 });
 
 

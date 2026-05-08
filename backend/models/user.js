@@ -1,7 +1,9 @@
 import { supabase } from "../db/db.js";
 
 export const userModel = {
+
     obtenerTodos: async () => {
+
         const { data, error } = await supabase
             .from("usuario")
             .select("*");
@@ -10,6 +12,7 @@ export const userModel = {
     },
 
     crearUsuario: async (usuario) => {
+
         const { data, error } = await supabase
             .from("usuario")
             .insert([usuario])
@@ -18,13 +21,14 @@ export const userModel = {
         return { data, error };
     },
 
-    actualizarUsuario: async (id,datos) =>{
-        const {data,error} = await supabase
-        .from("usuario")
-        .update(datos)
-        .eq("id", id)
-        .select();
+    actualizarUsuario: async (id, datos) => {
+
+        const { data, error } = await supabase
+            .from("usuario")
+            .update(datos)
+            .eq("id", id)
+            .select();
 
         return { data, error };
-    },
+    }
 };

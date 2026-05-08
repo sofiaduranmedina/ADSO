@@ -1,39 +1,63 @@
-import { userModel } from '../models/user.js';
+import { userModel } from "../models/user.js";
 
-export const usuario = async (req,res)=>{
+// traer usuarios
+export const usuario = async (req, res) => {
 
-    // aqui se recibe el modelo envio con el return
+    const { data, error } = await userModel.obtenerTodos();
 
-    const {data,error} = await userModel.obtenerTodos();
-    console.log ("DATA:", data);
-    console.log ("ERROR", error);
-
-    if (error){
-        return res.status (400).json ({error});
+    if (error) {
+        return res.status(500).json({ error });
     }
-    
-    return res.status (200).json (data)
+
+    res.json(data);
 };
 
-export const crearUsuario = async (req,res) =>{
-    const{nombre,email,rol,activo}= req.body;
+// crear usuario
+export const crearUsuario = async (req, res) => {
 
-    // validación rápida 
+    const { nombre, email, rol, activo } = req.body;
 
-    if (!nombre || !email || !rol || !activo) {
-        return res.status(500).json ({mensaje: "falta datos"});
+    const nuevoUsuario = {
+        nombre,
+        email,
+        rol,
+        activo
+    };
+
+    const { data, error } = await userModel.crearUsuario(nuevoUsuario);
+
+    if (error) {
+        return res.status(500).json({ error });
     }
 
-    const {data, error} = await userModel.crearUsuario({nombre,email,rol,activo});
-    if (error){
-        return res.status(400).json({
-            mensaje : "no se pudo crear usuario",
-            error: error.message
-        });
+    res.json({
+        mensaje: "Usuario creado",
+        usuario: data[0]
+    });
+};
 
+// actualizar usuario
+export const actualizarUsuario = async (req, res) => {
+
+    const { id } = req.params;
+
+    const { nombre, email, rol, activo } = req.body;
+
+    const datos = {};
+
+    if (nombre) datos.nombre = nombre;
+    if (email) datos.email = email;
+    if (rol) datos.rol = rol;
+    if (activo !== undefined) datos.activo = activo;
+
+    const { data, error } = await userModel.actualizarUsuario(id, datos);
+
+    if (error) {
+        return res.status(500).json({ error });
     }
-    return res.status(201).json({
-        mensaje: "usuario creado exitosamente",
+
+    res.json({
+        mensaje: "Usuario actualizado",
         usuario: data[0]
     });
 };

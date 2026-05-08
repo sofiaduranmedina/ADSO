@@ -1,0 +1,36 @@
+db.usuario.insertOne({
+    nombre: "sofia Duran",
+    email: "sofiaduran34@gmail.com",
+    pasword: "2345344",
+    rol: "estudiante"
+});
+
+db.usuario.insertOne({
+    nombre: "isabela Duran",
+    email: "isabeladuran@gmail.com",
+    pasword: "1432563",
+    rol: "aprendiz"
+});
+
+db.usuario.insertMany([
+    {
+    nombre: "mauricio",
+    email: "mau@gmail.com",
+    pasword: "1838737",
+    rol: "aprendiz"
+    },
+
+    {
+    nombre: "santiago",
+    email: "santi@gmail.com",
+    pasword: "65432",
+    rol: "aprendiz"
+    }, 
+
+    {
+    nombre: "jarvi",
+    email: "jarvi@gmail.com",
+    pasword: "837625",
+    rol: "aprendiz"
+    }
+ ]);

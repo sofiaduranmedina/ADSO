@@ -1,34 +1,20 @@
-import { supabase } from "../db/db.js";
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
-export const userModel = {
+const userSchema = new mongoose.Schema({
+  nombre: { type: String, required: true, uppercase: true, trim: true },
+  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+  password: { type: String, required: true },
+  codigoRecuperacion: String,
+  codigoExpiracion: Date,
+}, { timestamps: true });
 
-    obtenerTodos: async () => {
+// encriptar password
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
 
-        const { data, error } = await supabase
-            .from("usuario")
-            .select("*");
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+});
 
-        return { data, error };
-    },
-
-    crearUsuario: async (usuario) => {
-
-        const { data, error } = await supabase
-            .from("usuario")
-            .insert([usuario])
-            .select();
-
-        return { data, error };
-    },
-
-    actualizarUsuario: async (id, datos) => {
-
-        const { data, error } = await supabase
-            .from("usuario")
-            .update(datos)
-            .eq("id", id)
-            .select();
-
-        return { data, error };
-    }
-};
+export default mongoose.model("User", userSchema);

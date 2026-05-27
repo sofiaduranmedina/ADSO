@@ -1,9 +1,11 @@
-import { Router } from "express";
-import { usuario,crearUsuario,actualizarUsuario } from "../controllers/user.js";
+import express from 'express';
+// importar el controlador de usuarios 
 
-const router = Router();
-router.get('/traerDatos', usuario);
-router.post('/crear', crearUsuario);
-router.put("/actualizar/:id", actualizarUsuario);
+import { registrarUser } from '../controllers/user.js';
 
-export default router
+const router = express.Router();
+// ruta para registrar 
+
+router.post('/registrar', registrarUser);
+
+export default router;

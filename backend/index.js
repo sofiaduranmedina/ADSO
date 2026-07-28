@@ -5,6 +5,7 @@ import { conectarDB } from './db/db.js';
 import userRoutes from './routes/user.js';
 import loginRoutes from './routes/login.js';
 import recuperarRoutes from './routes/recuperar.js';
+import productoRouter from './routes/productRoutes.js';
 
 
 // creamos la app de express
@@ -38,6 +39,9 @@ app.use('/users', userRoutes);
 app.use('/', loginRoutes);
 // rutas de recuperar contraseña
 app.use('/', recuperarRoutes);
+
+// productos
+app.use('/', productoRouter);
 
 
 
